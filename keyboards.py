@@ -33,8 +33,11 @@ def inline_return_to_subsection_kb(section_id):
     return builder.as_markup(resize_keyboard=True)
 
 
-def inline_words_kb(section_id):
+def inline_words_kb(section_id, words):
     builder = aiogram.utils.keyboard.InlineKeyboardBuilder()
-
-    builder.row(types.InlineKeyboardButton(text=Strings.back_button, callback_data=f"section{section_id}"), width=2)
+    for word in words:
+        builder.add(types.InlineKeyboardButton(text=f"{word['espanol']}", callback_data="0"))
+        builder.add(types.InlineKeyboardButton(text=f"{word['russian']}", callback_data="0"))
+    builder.adjust(2)
+    builder.row(types.InlineKeyboardButton(text=Strings.back_button, callback_data=f"section{section_id}"), width=1)
     return builder.as_markup(resize_keyboard=True)
