@@ -2,65 +2,50 @@ import asyncio
 import logging
 
 from aiogram.client.default import DefaultBotProperties
-from aiogram.utils.markdown import text
+from aiogram.filters import Command
+from magic_filter import F
 
-from database import get_subsections, get_sections, get_words, get_subsection
-from aiogram import Bot, Dispatcher, types, F
-from aiogram.filters.command import Command
-from keyboards import inline_section_kb, inline_subsection_kb, inline_return_to_section_kb, \
-    inline_return_to_subsection_kb, inline_words_kb
-from common import clip_id
-from strings import Strings
+from domain.basic.basic import cmd_start, cmd_sections, cmd_profile
+from aiogram import Bot, Dispatcher
 
-logging.basicConfig(level=logging.INFO)
-default = DefaultBotProperties(allow_sending_without_reply=True, parse_mode="HTML")
-bot = Bot(token="7026242085:AAE1GU-GY4oBdy6gL0qL6t2p6o8jV47L6vo", default=default)
-dp = Dispatcher()
+from domain.basic.quiz import cmd_start_quiz
+from domain.basic.words_voice import cmd_voice, cmd_delete_voice, cmd_words, cmd_return_to_sections, cmd_return_to_words
+from domain.filters.filters import QuizCallbackData
+from domain.utils.settings import settings
 
-@dp.message(Command("start"))
-async def cmd_start(message: types.Message):
-    await message.answer(Strings.hello_words)
+async def on_start(bot: Bot):
+    await bot.send_message(text="Бот запущен.", chat_id=settings.admin_id)
 
-@dp.message(Command("sections"))
-async def cmd_sections(message: types.Message):
-    await message.answer(Strings.available_sections, reply_markup=inline_section_kb(get_sections()))
-
-@dp.callback_query(F.data == "return_to_sections")
-async def cmd_back_to_sections(callback: types.CallbackQuery):
-    await callback.answer()
-    message_text = text(f"<b>{Strings.available_sections}</b>")
-    await callback.message.edit_text(message_text, reply_markup=inline_section_kb(get_sections()))
+async def on_stop(bot: Bot):
+    await bot.send_message(text="Бот остановлен.", chat_id=settings.admin_id)
 
 
-@dp.callback_query(lambda text: text.data.startswith("section"))
-async def cmd_subsections(callback: types.CallbackQuery):
-    await callback.answer()
-    section_id = clip_id(callback.data, "section")
-    subsection = get_subsections(section_id)
-    if not subsection:
-        await callback.message.edit_text(text=Strings.oops_message, reply_markup=inline_return_to_section_kb())
-    else:
-        section_id = subsection[0]["section_id"]
-        section_title = get_sections()[section_id-1]["title"]
-        await callback.message.edit_text(text=section_title, reply_markup=inline_subsection_kb(subsection))
-    await callback.answer()
+
+async def start():
+    logging.basicConfig(level=logging.INFO)
+    default = DefaultBotProperties(allow_sending_without_reply=True, parse_mode="HTML")
+    bot = Bot(token=settings.bot_token, default=default)
+
+    dp = Dispatcher()
+    dp.startup.register(on_start)
+    dp.shutdown.register(on_stop)
+
+    dp.message.register(cmd_start, Command(commands=['start']))
+    dp.message.register(cmd_sections, Command(commands=['sections']))
+    dp.message.register(cmd_profile, Command(commands=['profile']))
+    dp.callback_query.register(cmd_words, lambda callback: callback.data.startswith("section"))
+    dp.callback_query.register(cmd_voice, lambda callback: callback.data.startswith("word"))
+    dp.callback_query.register(cmd_delete_voice, lambda callback: callback.data.startswith("delete_voice"))
+    dp.callback_query.register(cmd_return_to_sections, lambda callback: callback.data.startswith("return_to_sections"))
+    dp.callback_query.register(cmd_start_quiz, QuizCallbackData.filter())
+    dp.callback_query.register(cmd_return_to_words, lambda callback: callback.data.startswith("return_to_words"))
 
 
-@dp.callback_query(lambda text: text.data.startswith("subsection"))
-async def cmd_subsections(callback: types.CallbackQuery):
-    subsection_id = clip_id(callback.data, "subsection")
-    subsection = get_subsection(subsection_id)[0]
-    words = get_words(subsection_id)
-    if not words:
-        await callback.message.edit_text(text=Strings.oops_message,
-                                         reply_markup=inline_return_to_subsection_kb(subsection["section_id"]))
-    else:
-        await callback.message.edit_text(text=subsection['title'], reply_markup=inline_words_kb(section_id=subsection["section_id"], words=words))
+    try:
+        await dp.start_polling(bot)
+    finally:
+        await bot.session.close()
 
-    await callback.answer()
-
-async def main():
-    await dp.start_polling(bot)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(start())
