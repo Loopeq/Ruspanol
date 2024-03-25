@@ -24,6 +24,25 @@ section_id INTEGER REFERENCES Sections(id) ON UPDATE CASCADE
 )
 ''')
 
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS Users (
+id INTEGER PRIMARY KEY,
+user_id TEXT NOT NULL UNIQUE
+)
+''')
+
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS Users_Progress (
+id INTEGER PRIMARY KEY,
+complete BOOL DEFAULT false,
+user_id INTEGER REFERENCES Users(user_id) ON UPDATE CASCADE,
+section_id INTEGER REFERENCES Sections(id) ON UPDATE CASCADE
+)
+''')
+
+
+
+
 
 
 def get_sections():
@@ -55,6 +74,18 @@ def insert_words(words: list[tuple]):
                             VALUES 
                             (?, ?, ?)
                             """, words)
+    connection.commit()
+
+def insert_user(user_id: str):
+    cursor.execute("INSERT INTO Users (user_id) VALUES(?)", (user_id, ))
+    connection.commit()
+
+def get_user_progression(user_id: str):
+    cursor.execute("SELECT section_id FROM Users_Progress WHERE user_id = ?", (user_id, ))
+    return get_rows(cursor)
+
+def insert_user_progression(user_id: str, section_id):
+    cursor.execute("INSERT INTO Users_Progress (section_id, user_id, complete) VALUES (?, ?, ?)", (section_id, user_id, True,))
     connection.commit()
 
 

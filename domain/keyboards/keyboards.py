@@ -2,20 +2,8 @@ import aiogram.utils.keyboard
 import aiogram
 from aiogram import types
 
-from domain.filters.filters import  QuizCallbackData
 from resources.strings import Strings
 
-
-def inline_words_kb(words):
-    builder = aiogram.utils.keyboard.InlineKeyboardBuilder()
-    for word in words:
-        builder.add(types.InlineKeyboardButton(text=f"{word['espanol']}", callback_data=f'word{word["id"]}'))
-        builder.add(types.InlineKeyboardButton(text=f"{word['russian']}", callback_data=f'word{word["id"]}'))
-    builder.adjust(4)
-    builder.row(types.InlineKeyboardButton(text=Strings.start_quiz,
-                                           callback_data=QuizCallbackData(stage=0, section_id=words[0]["section_id"]).pack()), width=1)
-    builder.row(types.InlineKeyboardButton(text=Strings.back_button, callback_data="return_to_sections"), width=1)
-    return builder.as_markup(resize_keyboard=True)
 
 def inline_quiz_info(section_id: int, total_count: int, true_count: int, false_count: int,
                      user_answer: str = None, current_answer: str = None):
@@ -24,9 +12,9 @@ def inline_quiz_info(section_id: int, total_count: int, true_count: int, false_c
     builder.add(types.InlineKeyboardButton(text=str(false_count) + Strings.nope_quiz, callback_data="0"))
     builder.add(types.InlineKeyboardButton(text=Strings.total_quiz + str(total_count), callback_data="0"))
     if user_answer and current_answer:
-        builder.add(types.InlineKeyboardButton(text=f"Ваш ответ: {user_answer}", callback_data="0"))
-        builder.add(types.InlineKeyboardButton(text=f"Правильный ответ: {current_answer}", callback_data="0"))
-        builder.adjust(3, 2)
+        builder.row(types.InlineKeyboardButton(text=f"Ваш ответ: {user_answer}", callback_data="0"), width=1)
+        builder.row(types.InlineKeyboardButton(text=f"Правильный ответ: {current_answer}", callback_data="0"), width=1)
+        builder.adjust(3,1,1)
     builder.row(types.InlineKeyboardButton(text=Strings.quit_button, callback_data=f"return_to_words{section_id}"), width=1)
 
     return builder.as_markup(resize_keyboard=True)
