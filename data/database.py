@@ -40,6 +40,22 @@ section_id INTEGER REFERENCES Sections(id) ON UPDATE CASCADE
 )
 ''')
 
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS User_Sections (
+id INTEGER PRIMARY KEY,
+user_id INTEGER REFERENCES Users(user_id) ON UPDATE CASCADE,
+section_title TEXT NOT NULL
+)
+""")
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS User_Sections_Words(
+id INTEGER PRIMARY KEY,
+espanol TEXT NOT NULL,
+russian TEXT NOT NULL,
+us_id INTEGER REFERENCES User_Sections(id) ON UPDATE CASCADE
+)
+""")
 
 
 
@@ -88,5 +104,32 @@ def insert_user_progression(user_id: str, section_id):
     cursor.execute("INSERT INTO Users_Progress (section_id, user_id, complete) VALUES (?, ?, ?)", (section_id, user_id, True,))
     connection.commit()
 
+
+def get_user_sections(user_id: str):
+    cursor.execute("SELECT * FROM User_Sections WHERE user_id = ?", (user_id, ))
+    return get_rows(cursor)
+
+
+def insert_user_section(user_id: str, section_title: str):
+    user_section = get_user_sections(user_id)
+    users_section_title = [obj["section_title"] for obj in user_section]
+    if section_title not in users_section_title:
+        cursor.execute("INSERT INTO User_Sections (section_title, user_id) VALUES (?, ?)", (section_title, user_id, ))
+    connection.commit()
+
+def get_user_section_id(user_id: str, section_title: str):
+    cursor.execute("SELECT id FROM User_Sections WHERE user_id = ? AND section_title = ?", (user_id, section_title, ) )
+    return get_rows(cursor)
+
+def insert_words_to_user_section(data: list[dict]):
+    cursor.executemany("""INSERT INTO User_Sections_Words (espanol, russian, us_id) 
+                            VALUES 
+                            (?, ?, ?)
+                            """, data)
+    connection.commit()
+
+def get_us_words(us_id: str):
+    cursor.execute("SELECT * FROM User_Sections_Words WHERE us_id = ?", (us_id, ))
+    return get_rows(cursor)
 
 connection.commit()

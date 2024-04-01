@@ -21,7 +21,7 @@ class FSMPagWords(StatesGroup):
     select_page = State()
 
 
-def inline_words_kb(words, page: int):
+def inline_words_kb(words, page: int, is_us: bool = False):
 
     padding = 10
     current_page = padding * page
@@ -40,9 +40,10 @@ def inline_words_kb(words, page: int):
             action="next", page=page, total_count=total_count
         ).pack())
     )
-    builder.row(types.InlineKeyboardButton(text=Strings.start_quiz,
+    if not is_us:
+        builder.row(types.InlineKeyboardButton(text=Strings.start_quiz,
                                            callback_data=QuizCallbackData(stage=0, section_id=words[0]["section_id"]).pack()), width=1)
-    builder.row(types.InlineKeyboardButton(text=Strings.back_button, callback_data="return_to_sections"), width=1)
+        builder.row(types.InlineKeyboardButton(text=Strings.back_button, callback_data="return_to_sections"), width=1)
     return builder.as_markup(resize_keyboard=True)
 
 
