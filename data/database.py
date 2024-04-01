@@ -117,6 +117,10 @@ def insert_user_section(user_id: str, section_title: str):
         cursor.execute("INSERT INTO User_Sections (section_title, user_id) VALUES (?, ?)", (section_title, user_id, ))
     connection.commit()
 
+def get_user_section_by_id(us_id: str):
+    cursor.execute("SELECT * FROM User_Sections WHERE id=?", (us_id,))
+    return get_rows(cursor)
+
 def get_user_section_id(user_id: str, section_title: str):
     cursor.execute("SELECT id FROM User_Sections WHERE user_id = ? AND section_title = ?", (user_id, section_title, ) )
     return get_rows(cursor)
@@ -131,5 +135,12 @@ def insert_words_to_user_section(data: list[dict]):
 def get_us_words(us_id: str):
     cursor.execute("SELECT * FROM User_Sections_Words WHERE us_id = ?", (us_id, ))
     return get_rows(cursor)
+
+def delete_user_section(us_id: str):
+    cursor.execute("DELETE FROM User_Sections WHERE id = ?", (us_id,))
+    cursor.execute("DELETE FROM User_Sections_Words WHERE us_id = ?", (us_id, ))
+    connection.commit()
+
+
 
 connection.commit()

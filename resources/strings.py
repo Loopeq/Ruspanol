@@ -21,7 +21,7 @@ class Strings:
     add_user_section = "Добавить раздел✏️"
     available_user_sections = text(f"<b>Ваши разделы 📖</b>")
     add_us_title = text(f"Введите название раздела: ")
-
+    remove_section = "Удалить раздел🗑"
 
     @classmethod
     def add_us_word_info(cls, section_title):

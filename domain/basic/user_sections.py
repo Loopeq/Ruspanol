@@ -8,7 +8,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
 
 from data.database import get_user_sections, insert_user_section, get_user_section_id, insert_words_to_user_section, \
-    get_us_words
+    get_us_words, get_user_section_by_id, delete_user_section
 from domain.basic.words import inline_words_kb
 from domain.utils.common import parse_words
 from resources.strings import Strings
@@ -34,8 +34,13 @@ def inline_user_sections_kb(user_id):
     builder.row(add_button)
     return builder.as_markup(resize_keyboard=True)
 
+def inline_user_section_words_kb(us_id: str):
+    builder = aiogram.utils.keyboard.InlineKeyboardBuilder()
+    builder.row(types.InlineKeyboardButton(text=Strings.remove_section, callback_data=UserSectionsCD(action="remove_user_section",
+                                                     u_section_id=us_id).pack()))
+    return builder.as_markup(resize_keyboard=True)
 
-def inline_user_sections_cancel_kn():
+def inline_user_sections_cancel_kb():
     builder = aiogram.utils.keyboard.InlineKeyboardBuilder()
     builder.row(types.InlineKeyboardButton(text=Strings.cancel_button, callback_data="cancel_add_user_section"))
     return builder.as_markup(resize_keyboard=True)
@@ -46,7 +51,7 @@ async def cmd_my_sections(message: Message):
     await message.answer(Strings.available_user_sections, reply_markup=inline_user_sections_kb(message.from_user.id))
 
 async def add_user_section_title(callback: CallbackQuery, bot: Bot, state: FSMContext):
-    message = await bot.send_message(callback.from_user.id, Strings.add_us_title, reply_markup=inline_user_sections_cancel_kn())
+    message = await bot.send_message(callback.from_user.id, Strings.add_us_title, reply_markup=inline_user_sections_cancel_kb())
     await state.set_state(UserSectionState.add_title)
     await state.update_data(current_message=message)
     await callback.answer()
@@ -60,7 +65,7 @@ async def add_user_section_words(message: Message, state: FSMContext, bot: Bot):
 
     current_message_id = data["current_message"].message_id
     await bot.edit_message_text(text=Strings.add_us_word_info(section_title=title), chat_id=message.from_user.id, message_id=current_message_id,
-                                reply_markup=inline_user_sections_cancel_kn())
+                                reply_markup=inline_user_sections_cancel_kb())
 
 
 async def add_user_section_finish(message: Message, state: FSMContext, bot: Bot):
@@ -94,12 +99,17 @@ async def cancel_add_us(callback: CallbackQuery, state: FSMContext, bot: Bot):
 async def get_user_section_words(callback: CallbackQuery, callback_data: UserSectionsCD):
     us_id = callback_data.u_section_id
     words = get_us_words(us_id=str(us_id))
-    await callback.message.edit_text(text="Доступные слова", inline_message_id=callback.inline_message_id, reply_markup=
-                                     inline_words_kb(words=words, page=0, is_us=True))
+    user_section = get_user_section_by_id(str(us_id))[0]
+    await callback.message.edit_text(text=user_section['section_title'], inline_message_id=callback.inline_message_id, reply_markup=
+                                     inline_user_section_words_kb(us_id=str(us_id)))
 
 
 
-
+async def remove_user_section(callback: CallbackQuery, callback_data: UserSectionsCD):
+    us_id = callback_data.u_section_id
+    delete_user_section(str(us_id))
+    await callback.message.edit_text(text=Strings.available_sections, reply_markup=inline_user_sections_kb(callback.from_user.id))
+    await callback.answer()
 
 
 

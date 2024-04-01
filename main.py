@@ -11,7 +11,8 @@ from aiogram import Bot, Dispatcher, F
 
 from domain.basic.quiz import cmd_start_quiz, FSMQuiz, cmd_add_answer
 from domain.basic.user_sections import cmd_my_sections, add_user_section_title, add_user_section_words, \
-    UserSectionState, add_user_section_finish, cancel_add_us, get_user_section_words, UserSectionsCD
+    UserSectionState, add_user_section_finish, cancel_add_us, get_user_section_words, UserSectionsCD, \
+    remove_user_section
 from domain.basic.words import cmd_words, cmd_words_pag, WordsPag
 from domain.basic.words_voice import cmd_voice, cmd_delete_voice, cmd_return_to_sections, cmd_return_to_words
 from domain.filters.filters import QuizCallbackData
@@ -54,7 +55,8 @@ async def start():
     dp.message.register(add_user_section_words, StateFilter(UserSectionState.add_title))
     dp.callback_query.register(cancel_add_us, lambda callback: callback.data.startswith("cancel_add_user_section"))
     dp.message.register(add_user_section_finish, StateFilter(UserSectionState.add_words))
-    dp.callback_query.register(get_user_section_words, UserSectionsCD.filter())
+    dp.callback_query.register(get_user_section_words, UserSectionsCD.filter(F.action=="show_us_words"))
+    dp.callback_query.register(remove_user_section, UserSectionsCD.filter(F.action=="remove_user_section"))
 
     try:
         await dp.start_polling(bot)
