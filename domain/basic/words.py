@@ -6,6 +6,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import CallbackQuery
 
 from data.database import get_section, get_words
+
 from domain.filters.filters import QuizCallbackData
 from domain.keyboards.keyboards import inline_return_to_section_kb
 from domain.utils.common import clip_id
@@ -28,8 +29,9 @@ def inline_words_kb(words, page: int, is_us: bool = False):
     total_count = len(words) // padding
     builder = aiogram.utils.keyboard.InlineKeyboardBuilder()
     for word in words[current_page:current_page+padding]:
-        builder.add(types.InlineKeyboardButton(text=f"{word['espanol']}", callback_data=f'word{word["id"]}'))
-        builder.add(types.InlineKeyboardButton(text=f"{word['russian']}", callback_data=f'word{word["id"]}'))
+        from domain.basic.words_voice import VoiceCD
+        builder.add(types.InlineKeyboardButton(text=f"{word['espanol']}", callback_data=VoiceCD(is_user_section=False, word_id=str(word['id'])).pack()))
+        builder.add(types.InlineKeyboardButton(text=f"{word['russian']}", callback_data=VoiceCD(is_user_section=False, word_id=str(word['id'])).pack()))
     builder.adjust(2)
     builder.row(
         types.InlineKeyboardButton(text='<=', callback_data=WordsPag(

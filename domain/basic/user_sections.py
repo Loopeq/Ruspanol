@@ -8,14 +8,18 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
 
 from data.database import get_user_sections, insert_user_section, get_user_section_id, insert_words_to_user_section, \
-    get_us_words, get_user_section_by_id, delete_user_section
-from domain.basic.words import inline_words_kb
+    get_us_words, get_user_section_by_id, delete_user_section, get_user_id_by_us_id
+from domain.basic.words_voice import VoiceCD
 from domain.utils.common import parse_words
 from resources.strings import Strings
 
 class UserSectionsCD(CallbackData, prefix="user_section"):
     action: str
     u_section_id: int = None
+
+class UserSectionsWordsCD(CallbackData, prefix="user_section_words"):
+    action: str
+
 
 class UserSectionState(StatesGroup):
     add_title = State()
@@ -34,11 +38,26 @@ def inline_user_sections_kb(user_id):
     builder.row(add_button)
     return builder.as_markup(resize_keyboard=True)
 
-def inline_user_section_words_kb(us_id: str):
+def inline_user_section_words_kb(us_id: str, words: list):
+
     builder = aiogram.utils.keyboard.InlineKeyboardBuilder()
-    builder.row(types.InlineKeyboardButton(text=Strings.remove_section, callback_data=UserSectionsCD(action="remove_user_section",
-                                                     u_section_id=us_id).pack()))
+
+    for word in words:
+        builder.add(types.InlineKeyboardButton(text=word["espanol"], callback_data=VoiceCD(is_user_section=True, word_id=str(word["id"])).pack()))
+        builder.add(types.InlineKeyboardButton(text=word["russian"], callback_data=VoiceCD(is_user_section=True, word_id=str(word["id"])).pack()))
+    builder.adjust(2)
+    builder.row(types.InlineKeyboardButton(text=Strings.back_button, callback_data=UserSectionsCD(action="back_to_user_sections", u_section_id=us_id).pack()))
+    builder.row(types.InlineKeyboardButton(text=Strings.remove_section,
+                                           callback_data=UserSectionsCD(action="remove_user_section",
+                                                                        u_section_id=us_id).pack()))
+
     return builder.as_markup(resize_keyboard=True)
+
+async def cmd_back_to_user_sections(callback: CallbackQuery, callback_data: UserSectionsCD):
+    user_id = get_user_id_by_us_id(us_id=str(callback_data.u_section_id))[0]["user_id"]
+    await callback.message.edit_text(text=Strings.available_user_sections, inline_message_id=callback.inline_message_id,
+                                     reply_markup=inline_user_sections_kb(user_id=user_id))
+
 
 def inline_user_sections_cancel_kb():
     builder = aiogram.utils.keyboard.InlineKeyboardBuilder()
@@ -101,7 +120,7 @@ async def get_user_section_words(callback: CallbackQuery, callback_data: UserSec
     words = get_us_words(us_id=str(us_id))
     user_section = get_user_section_by_id(str(us_id))[0]
     await callback.message.edit_text(text=user_section['section_title'], inline_message_id=callback.inline_message_id, reply_markup=
-                                     inline_user_section_words_kb(us_id=str(us_id)))
+                                     inline_user_section_words_kb(us_id=str(us_id), words=words))
 
 
 

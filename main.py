@@ -12,9 +12,9 @@ from aiogram import Bot, Dispatcher, F
 from domain.basic.quiz import cmd_start_quiz, FSMQuiz, cmd_add_answer
 from domain.basic.user_sections import cmd_my_sections, add_user_section_title, add_user_section_words, \
     UserSectionState, add_user_section_finish, cancel_add_us, get_user_section_words, UserSectionsCD, \
-    remove_user_section
+    remove_user_section, cmd_back_to_user_sections
 from domain.basic.words import cmd_words, cmd_words_pag, WordsPag
-from domain.basic.words_voice import cmd_voice, cmd_delete_voice, cmd_return_to_sections, cmd_return_to_words
+from domain.basic.words_voice import cmd_voice, cmd_delete_voice, cmd_return_to_sections, cmd_return_to_words, VoiceCD
 from domain.filters.filters import QuizCallbackData
 from domain.utils.settings import settings
 
@@ -41,7 +41,7 @@ async def start():
     dp.message.register(cmd_my_sections, Command(commands=['my_sections']))
 
     dp.callback_query.register(cmd_words, lambda callback: callback.data.startswith("section"))
-    dp.callback_query.register(cmd_voice, lambda callback: callback.data.startswith("word"))
+    dp.callback_query.register(cmd_voice, VoiceCD.filter())
     dp.callback_query.register(cmd_delete_voice, lambda callback: callback.data.startswith("delete_voice"))
     dp.callback_query.register(cmd_return_to_sections, lambda callback: callback.data.startswith("return_to_sections"),
                                )
@@ -57,6 +57,7 @@ async def start():
     dp.message.register(add_user_section_finish, StateFilter(UserSectionState.add_words))
     dp.callback_query.register(get_user_section_words, UserSectionsCD.filter(F.action=="show_us_words"))
     dp.callback_query.register(remove_user_section, UserSectionsCD.filter(F.action=="remove_user_section"))
+    dp.callback_query.register(cmd_back_to_user_sections, UserSectionsCD.filter(F.action == "back_to_user_sections"))
 
     try:
         await dp.start_polling(bot)

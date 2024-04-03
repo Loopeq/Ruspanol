@@ -136,11 +136,18 @@ def get_us_words(us_id: str):
     cursor.execute("SELECT * FROM User_Sections_Words WHERE us_id = ?", (us_id, ))
     return get_rows(cursor)
 
+def get_us_word_by_id(id: str):
+    cursor.execute("SELECT * FROM User_Sections_Words WHERE id = ?", (id, ))
+    return get_rows(cursor)
+
 def delete_user_section(us_id: str):
     cursor.execute("DELETE FROM User_Sections WHERE id = ?", (us_id,))
     cursor.execute("DELETE FROM User_Sections_Words WHERE us_id = ?", (us_id, ))
     connection.commit()
 
+def get_user_id_by_us_id(us_id: str):
+    cursor.execute("SELECT user_id FROM User_Sections WHERE id = ?", (us_id,))
+    return get_rows(cursor)
 
 
 connection.commit()

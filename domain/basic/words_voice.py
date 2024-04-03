@@ -1,10 +1,12 @@
 from aiogram import Bot
+from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, FSInputFile
 
-from data.database import get_words, get_word_by_id, get_section, get_sections
+from data.database import get_words, get_word_by_id, get_section, get_sections, get_us_word_by_id
 from domain.basic.basic import inline_section_kb
 from domain.basic.words import inline_words_kb
+
 from domain.keyboards.keyboards import \
     inline_delete_voice
 
@@ -12,11 +14,18 @@ from domain.utils.common import clip_id
 from resources.strings import Strings
 from text_to_speech.voice_request import get_voice
 
+class VoiceCD(CallbackData, prefix="voice_cd"):
+    is_user_section: bool
+    word_id: str
 
-async def cmd_voice(callback: CallbackQuery, bot: Bot):
-    word_id = clip_id(callback.data, "word")
-    current_word = get_word_by_id(word_id)[0]
-    voice_path = get_voice(current_word["espanol"], word_id)
+async def cmd_voice(callback: CallbackQuery, callback_data: VoiceCD, bot: Bot):
+
+    word_id = callback_data.word_id
+    if callback_data.is_user_section:
+        current_word = get_us_word_by_id(word_id)[0]
+    else:
+        current_word = get_word_by_id(word_id)[0]
+    voice_path = get_voice(current_word["espanol"], int(word_id), is_us=callback_data.is_user_section)
     v_inp = FSInputFile(path = voice_path)
     await bot.send_voice(chat_id=callback.from_user.id, voice=v_inp,
                          caption=current_word["espanol"], reply_markup=inline_delete_voice(word_id=word_id))
