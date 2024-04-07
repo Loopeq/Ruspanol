@@ -22,6 +22,12 @@ class Strings:
     available_user_sections = text(f"<b>Ваши разделы 📖</b>")
     add_us_title = text(f"Введите название раздела: ")
     remove_section = "Удалить раздел🗑"
+    us_start_practice = "Начать практику🧠"
+    cancel_user_quiz = "Закончить практику❌"
+    user_quiz_info = "⬇️Переведите с русского на испанский⬇️"
+    add_word_to_us = "Добавить слова"
+    cancel_edit = "Завершить❌"
+    edit_us_info = "Редактировать раздел⚙️"
 
     @classmethod
     def add_us_word_info(cls, section_title):
@@ -31,3 +37,7 @@ class Strings:
     @classmethod
     def add_us_final_info(cls, section_title):
         return f"Вы создали раздел {section_title}. Вы можете его редактировать.\n/my_sections"
+
+    @classmethod
+    def edit_user_section_info(cls, us_title):
+        return f"⚙️Редактировать раздел: {us_title}"

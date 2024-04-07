@@ -3,7 +3,6 @@ import re
 def clip_id(word, flag):
     return int(re.sub(flag, "", word))
 
-
 def parse_words(words: str, us_id: str):
     words = words.split(";")
     words = [word.split("-") for word in words]
@@ -14,7 +13,12 @@ def parse_words(words: str, us_id: str):
         words_list.append((esp, ru, us_id))
     return words_list
 
-
+def replace_syg(word):
+    result = word
+    syg = {"á": "a", "ñ": "n", "é": "e", "í": "i", "ó": "o", "ú": "u"}
+    for i in syg.keys():
+        result = result.replace(i, syg[i])
+    return result
 
 
 

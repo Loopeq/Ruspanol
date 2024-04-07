@@ -6,18 +6,13 @@ from aiogram.types import CallbackQuery, Message
 from data.database import get_words, insert_user_progression
 from domain.filters.filters import QuizCallbackData
 from domain.keyboards.keyboards import inline_quiz_info
+from domain.utils.common import replace_syg
 from resources.strings import Strings
 import random
 
 class FSMQuiz(StatesGroup):
     add_answer = State()
 
-def replace_syg(word):
-    result = word
-    syg = {"á": "a", "ñ": "n", "é": "e", "í": "i", "ó": "o", "ú": "u"}
-    for i in syg.keys():
-        result = result.replace(i, syg[i])
-    return result
 
 
 async def cmd_start_quiz(callback: CallbackQuery, callback_data: QuizCallbackData, state: FSMContext):

@@ -10,7 +10,13 @@ from domain.basic.basic import cmd_start, cmd_sections, cmd_profile, cmd_change_
 from aiogram import Bot, Dispatcher, F
 
 from domain.basic.quiz import cmd_start_quiz, FSMQuiz, cmd_add_answer
-from domain.basic.user_sections import cmd_my_sections, add_user_section_title, add_user_section_words, \
+from domain.other import get_plug_callback
+from domain.user_section.callback_data import UserSectionQuizCD, EditUserSectionCD
+from domain.user_section.edit_user_section import edit_user_section, finish_edit_user_section
+from domain.user_section.fsm_states import UserSectionQuizState
+from domain.user_section.user_section_quiz import cmd_start_user_section_quiz, cancel_user_section_quiz, \
+    cmd_add_answer_us
+from domain.user_section.user_sections import cmd_my_sections, add_user_section_title, add_user_section_words, \
     UserSectionState, add_user_section_finish, cancel_add_us, get_user_section_words, UserSectionsCD, \
     remove_user_section, cmd_back_to_user_sections
 from domain.basic.words import cmd_words, cmd_words_pag, WordsPag
@@ -35,6 +41,9 @@ async def start():
     dp.startup.register(on_start)
     dp.shutdown.register(on_stop)
 
+    dp.callback_query.register(get_plug_callback, lambda callback: callback.data.startswith("0"))
+
+
     dp.message.register(cmd_start, Command(commands=['start']))
     dp.message.register(cmd_sections, Command(commands=['sections']))
     dp.message.register(cmd_profile, Command(commands=['profile']))
@@ -46,7 +55,6 @@ async def start():
     dp.callback_query.register(cmd_return_to_sections, lambda callback: callback.data.startswith("return_to_sections"),
                                )
     dp.callback_query.register(cmd_start_quiz, QuizCallbackData.filter())
-
     dp.callback_query.register(cmd_return_to_words, lambda callback: callback.data.startswith("return_to_words"))
     dp.callback_query.register(cmd_change_page, SPagCallbackData.filter())
     dp.message.register(cmd_add_answer, StateFilter(FSMQuiz.add_answer))
@@ -57,8 +65,13 @@ async def start():
     dp.message.register(add_user_section_finish, StateFilter(UserSectionState.add_words))
     dp.callback_query.register(get_user_section_words, UserSectionsCD.filter(F.action=="show_us_words"))
     dp.callback_query.register(remove_user_section, UserSectionsCD.filter(F.action=="remove_user_section"))
-    dp.callback_query.register(cmd_back_to_user_sections, UserSectionsCD.filter(F.action == "back_to_user_sections"))
-
+    dp.callback_query.register(edit_user_section, UserSectionsCD.filter(F.action=="edit_us"))
+    dp.callback_query.register(cmd_back_to_user_sections, UserSectionsCD.filter(F.action=="back_to_user_sections"))
+    dp.callback_query.register(cmd_start_user_section_quiz, UserSectionQuizCD.filter(F.action=="start_user_section_quiz"))
+    dp.callback_query.register(cancel_user_section_quiz,
+                               lambda callback: callback.data.startswith("finish_user_section_quiz"))
+    dp.message.register(cmd_add_answer_us, StateFilter(UserSectionQuizState.add_answer))
+    dp.callback_query.register(finish_edit_user_section, EditUserSectionCD.filter(F.action=="cancel_edit_us"))
     try:
         await dp.start_polling(bot)
     finally:
