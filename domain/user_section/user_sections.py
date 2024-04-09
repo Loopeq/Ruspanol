@@ -89,7 +89,6 @@ async def cancel_add_us(callback: CallbackQuery, state: FSMContext, bot: Bot):
 async def get_user_section_words(callback: CallbackQuery, callback_data: UserSectionsCD):
     us_id = callback_data.u_section_id
     page = callback_data.page
-    print(page)
     words = get_us_words(us_id=str(us_id))
     user_section = get_user_section_by_id(str(us_id))[0]
     try:

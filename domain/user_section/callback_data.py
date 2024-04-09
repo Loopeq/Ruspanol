@@ -12,7 +12,7 @@ class UserSectionsCD(CallbackData, prefix="user_section"):
 
 class EditUserSectionCD(CallbackData, prefix="edit_us"):
     action: str
-
+    us_id: str = ""
 
 class UserSectionsWordsCD(CallbackData, prefix="user_section_words"):
     action: str

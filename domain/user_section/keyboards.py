@@ -80,5 +80,5 @@ def inline_edit_user_section(us_id: str):
                                            callback_data=UserSectionsCD(action="remove_user_section",
                                                                         u_section_id=us_id).pack()))
 
-    builder.row(types.InlineKeyboardButton(text=Strings.cancel_edit, callback_data=EditUserSectionCD(action="cancel_edit_us").pack()))
+    builder.row(types.InlineKeyboardButton(text=Strings.cancel_edit, callback_data=EditUserSectionCD(action="cancel_edit_us", us_id=us_id).pack()))
     return builder.as_markup(resize_keyboard=True)
