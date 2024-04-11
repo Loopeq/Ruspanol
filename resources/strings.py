@@ -25,9 +25,15 @@ class Strings:
     us_start_practice = "Начать практику🧠"
     cancel_user_quiz = "Закончить практику❌"
     user_quiz_info = "⬇️Переведите с русского на испанский⬇️"
-    add_word_to_us = "Добавить слова"
+    add_word_to_us = "Добавить слова📌"
     cancel_edit = "Завершить❌"
     edit_us_info = "Редактировать раздел⚙️"
+    delete_word_info = "Удалить слово↩️"
+
+
+    @classmethod
+    def profile_data(cls, user_id: str):
+        return f"{user_id}"
 
     @classmethod
     def add_us_word_info(cls, section_title):
@@ -41,3 +47,7 @@ class Strings:
     @classmethod
     def edit_user_section_info(cls, us_title):
         return f"⚙️Редактировать раздел: {us_title}"
+
+    @classmethod
+    def delete_word_us_info(cls, us_title):
+        return f"<b>{us_title}</b>: Удаление слов\nНажмите на ❌ для удаления."

@@ -149,5 +149,8 @@ def get_user_id_by_us_id(us_id: str):
     cursor.execute("SELECT user_id FROM User_Sections WHERE id = ?", (us_id,))
     return get_rows(cursor)
 
+def delete_word_by_id(word_id: str, us_id: str):
+    cursor.execute("DELETE FROM User_Sections_Words WHERE id = ? AND us_id = ?", (word_id, us_id,))
+    connection.commit()
 
 connection.commit()

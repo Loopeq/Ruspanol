@@ -4,7 +4,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, FSInputFile
 
 from data.database import get_words, get_word_by_id, get_section, get_sections, get_us_word_by_id
-from domain.basic.basic import inline_section_kb
+
+
 from domain.basic.words import inline_words_kb
 
 from domain.keyboards.keyboards import \
@@ -45,5 +46,7 @@ async def cmd_delete_voice(callback: CallbackQuery):
 
 async def cmd_return_to_sections(callback: CallbackQuery, state: FSMContext):
     await state.clear()
+
+    from domain.basic.core import inline_section_kb
     await callback.message.edit_text(text=Strings.available_sections, reply_markup=inline_section_kb(get_sections(), page=0, user_id=callback.from_user.id))
     await callback.answer()

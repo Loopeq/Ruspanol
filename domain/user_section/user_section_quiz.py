@@ -4,7 +4,7 @@ from aiogram.types import CallbackQuery, Message
 from data.database import get_us_words
 from domain.user_section.callback_data import UserSectionQuizCD
 from domain.user_section.fsm_states import UserSectionQuizState
-from domain.user_section.keyboards import inline_user_section_quiz_kb, inline_user_sections_kb
+from domain.user_section.us_keyboards.keyboards import inline_user_section_quiz_kb, inline_user_sections_kb
 from domain.utils.common import replace_syg
 
 from resources.strings import Strings
@@ -31,8 +31,8 @@ async def cmd_add_answer_us(message: Message, state: FSMContext, bot: Bot):
     mod_correct_answer = replace_syg(data["answer"])
     message_id = data["message_id"]
     total, correct, incorrect = data["total"], data["correct"], data["incorrect"]
-
-    if mod_correct_answer == mod_user_answer:
+    is_correct = mod_correct_answer == mod_user_answer
+    if is_correct:
         correct +=1
     else:
         incorrect+=1
@@ -44,7 +44,7 @@ async def cmd_add_answer_us(message: Message, state: FSMContext, bot: Bot):
     await bot.edit_message_text(text=Strings.user_quiz_info, chat_id=message.from_user.id, message_id=message_id,
                                 reply_markup=inline_user_section_quiz_kb(
                                     correct=correct, incorrect=incorrect, total=total, word=next_word["russian"],
-                                    correct_answer=data["answer"], user_answer=message.text
+                                    correct_answer=data["answer"], user_answer=message.text, is_correct=is_correct
                                 ))
     await message.delete()
 
@@ -53,3 +53,5 @@ async def cancel_user_section_quiz(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(Strings.available_user_sections, reply_markup=inline_user_sections_kb(callback.from_user.id))
     await state.clear()
     await callback.answer()
+
+

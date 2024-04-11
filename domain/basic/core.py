@@ -5,6 +5,8 @@ from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
+
+
 from resources.strings import Strings
 from data.database import get_sections, insert_user, get_user_progression
 
@@ -87,5 +89,5 @@ async def cmd_change_page(callback: CallbackQuery, callback_data: SPagCallbackDa
 
 async def cmd_profile(message: Message, state: FSMContext):
     await state.clear()
-    await message.answer("Профиль")
+    await message.answer("Действия")
 

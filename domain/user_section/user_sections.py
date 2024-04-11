@@ -1,5 +1,3 @@
-import asyncio
-
 import aiogram
 from aiogram import types, Bot
 from aiogram.fsm.context import FSMContext
@@ -9,7 +7,8 @@ from aiogram.types import Message, CallbackQuery
 from data.database import  insert_user_section, get_user_section_id, insert_words_to_user_section, \
     get_us_words, get_user_section_by_id, delete_user_section, get_user_id_by_us_id
 from domain.user_section.callback_data import UserSectionsCD
-from domain.user_section.keyboards import inline_user_section_words_kb, inline_user_sections_kb
+from domain.user_section.us_keyboards.keyboards import  inline_user_sections_kb
+from domain.user_section.us_keyboards.user_words_keyboards import inline_user_section_words_kb
 from domain.utils.common import parse_words
 from resources.strings import Strings
 
