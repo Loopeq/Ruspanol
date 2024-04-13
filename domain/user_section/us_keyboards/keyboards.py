@@ -5,8 +5,8 @@ from aiogram import types
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import CallbackQuery
 
-from data.database import get_user_sections
-from domain.basic.words_voice import VoiceCD
+from data.queries import get_user_sections
+from domain.fixme.words_voice import VoiceCD
 from domain.user_section.callback_data import UserSectionQuizCD, UserSectionsCD, EditUserSectionCD
 from resources.strings import Strings
 

@@ -1,7 +1,7 @@
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from data.database import get_user_section_by_id, get_us_words, insert_words_to_user_section, delete_word_by_id
+from data.queries import get_user_section_by_id, get_us_words, insert_words_to_user_section, delete_word_by_id
 from domain.user_section.callback_data import UserSectionsCD, EditUserSectionCD
 from domain.user_section.fsm_states import UserSectionEdit
 from domain.user_section.us_keyboards.keyboards import inline_edit_user_section, inline_back_to_edit

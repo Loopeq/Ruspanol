@@ -1,7 +1,7 @@
 from aiogram import Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
-from data.database import get_us_words
+from data.queries import get_us_words
 from domain.user_section.callback_data import UserSectionQuizCD
 from domain.user_section.fsm_states import UserSectionQuizState
 from domain.user_section.us_keyboards.keyboards import inline_user_section_quiz_kb, inline_user_sections_kb

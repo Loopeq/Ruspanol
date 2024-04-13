@@ -6,7 +6,7 @@ from aiogram import types
 
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from domain.basic.words_voice import VoiceCD
+from domain.fixme.words_voice import VoiceCD
 from domain.user_section.callback_data import UserSectionsCD, UserSectionQuizCD, EditUserSectionCD
 from resources.strings import Strings
 

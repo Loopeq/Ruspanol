@@ -2,9 +2,9 @@ from aiogram.utils.markdown import text
 
 
 class Strings:
-    hello_words = "¡Hola! 👋 ¡Bienvenido al bot de español! 📚 Estoy aquí para ayudarte a explorar y enriquecer tu " \
-                "vocabulario en español. 🇪🇸 ¡Vamos a aprender juntos! 😊\n/sections"
-    available_sections = text(f"<b>Доступные разделы 📖</b>")
+    entry_info = "¡Hola! 👋 Тебя приветствует бот для изучения испанской лексики.\n" \
+                 "Ты можешь использовать мои разделы или создавать свои 😊\n/sections"
+    sections_info = f"<b>Доступные разделы 📖</b>"
 
     oops_message = "Кажется тут пока ничего нет... 😿"
     back_button = "Назад ↩️"
@@ -30,6 +30,9 @@ class Strings:
     edit_us_info = "Редактировать раздел⚙️"
     delete_word_info = "Удалить слово↩️"
 
+    @classmethod
+    def section_title_info(cls, title, translate):
+        return f"{title}\n{translate}"
 
     @classmethod
     def profile_data(cls, user_id: str):
@@ -38,7 +41,7 @@ class Strings:
     @classmethod
     def add_us_word_info(cls, section_title):
         return f"Введите слова для раздела <b>{section_title}</b> " \
-               f"в виде:\n<b>слово1 - перевод1; слово2 - перевод2</b>"
+               f"в виде:\n<b>слово1 - перевод1; слово2 - перевод2<b>"
 
     @classmethod
     def add_us_final_info(cls, section_title):

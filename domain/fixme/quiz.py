@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import CallbackQuery, Message
 
-from data.database import get_words, insert_user_progression
+from data.queries import get_words, insert_user_progression
 from domain.filters.filters import QuizCallbackData
 from domain.keyboards.keyboards import inline_quiz_info
 from domain.utils.common import replace_syg

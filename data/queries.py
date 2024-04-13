@@ -1,65 +1,5 @@
-import sqlite3
-
+from data.core import cursor, connection
 from data.wrapper import get_rows
-
-connection = sqlite3.connect('data/espanol.db')
-connection.row_factory = sqlite3.Row
-cursor = connection.cursor()
-
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Sections (
-id INTEGER PRIMARY KEY,
-title TEXT NOT NULL UNIQUE,
-level TEXT NOT NULL
-)
-''')
-
-
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Words (
-id INTEGER PRIMARY KEY,
-russian TEXT NOT NULL,
-espanol TEXT NOT NULL,
-section_id INTEGER REFERENCES Sections(id) ON UPDATE CASCADE
-)
-''')
-
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Users (
-id INTEGER PRIMARY KEY,
-user_id TEXT NOT NULL UNIQUE
-)
-''')
-
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Users_Progress (
-id INTEGER PRIMARY KEY,
-complete BOOL DEFAULT false,
-user_id INTEGER REFERENCES Users(user_id) ON UPDATE CASCADE,
-section_id INTEGER REFERENCES Sections(id) ON UPDATE CASCADE
-)
-''')
-
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS User_Sections (
-id INTEGER PRIMARY KEY,
-user_id INTEGER REFERENCES Users(user_id) ON UPDATE CASCADE,
-section_title TEXT NOT NULL
-)
-""")
-
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS User_Sections_Words(
-id INTEGER PRIMARY KEY,
-espanol TEXT NOT NULL,
-russian TEXT NOT NULL,
-us_id INTEGER REFERENCES User_Sections(id) ON UPDATE CASCADE
-)
-""")
-
-
-
-
 
 def get_sections():
     cursor.execute("SELECT * FROM Sections")
@@ -152,5 +92,3 @@ def get_user_id_by_us_id(us_id: str):
 def delete_word_by_id(word_id: str, us_id: str):
     cursor.execute("DELETE FROM User_Sections_Words WHERE id = ? AND us_id = ?", (word_id, us_id,))
     connection.commit()
-
-connection.commit()

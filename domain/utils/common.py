@@ -1,4 +1,7 @@
 import re
+from aiogram.types import CallbackQuery
+
+PLUG = "0"
 
 def clip_id(word, flag):
     return int(re.sub(flag, "", word))
@@ -20,3 +23,14 @@ def replace_syg(word):
         result = result.replace(i, syg[i])
     return result
 
+
+async def get_plug_callback(callback: CallbackQuery):
+    await callback.answer()
+
+def clip_level(level: str):
+    level = level.split(",")
+    level = list(map(lambda x: x.replace(" ", ""), level))
+
+    if len(level) == 1:
+        return level[0]
+    return f"{level[0]} - {level[-1]}"
