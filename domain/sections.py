@@ -9,20 +9,19 @@ from aiogram.types import CallbackQuery, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from magic_filter import F
 
+from domain.pagination import PaginationActions, Pagination, PaginationCallbackData
 from domain.utils.common import PLUG, clip_level
 from resources.strings import Strings
 from data.queries import get_sections
 
-router = Router()
+sections_router = Router()
 
 
 class SectionsCallbackActions(Enum):
-    next = "next"
-    prev = "prev"
     onClick = "onClick"
 
 
-class SectionsCallback(CallbackData, prefix="sections_cd"):
+class SectionsCallback(PaginationCallbackData):
     action: SectionsCallbackActions
     page: Optional[int] = 0
     length: Optional[int] = 0
@@ -32,14 +31,17 @@ class SectionsCallback(CallbackData, prefix="sections_cd"):
 class SectionsState(StatesGroup):
     change_page = State()
 
+LIMIT = 12
+pagination = Pagination(callback_data=SectionsCallback, limit=LIMIT)
 
 def get_sections_ikb(sections: list[dict], page: int = 0):
     builder = InlineKeyboardBuilder()
 
     limit = 14
-    length = len(sections) // limit
 
     sections = sections[limit * page:limit * page + limit]
+    pagination.set_data(sections)
+
     for section in sections:
         builder.add(InlineKeyboardButton(text=section["title"],
                                        callback_data=SectionsCallback(action=SectionsCallbackActions.onClick,
@@ -47,22 +49,18 @@ def get_sections_ikb(sections: list[dict], page: int = 0):
                     InlineKeyboardButton(text=clip_level(section["level"]), callback_data=PLUG))
 
     builder.adjust(2)
-    builder.row(
-        InlineKeyboardButton(text='<=', callback_data=SectionsCallback(
-            action=SectionsCallbackActions.prev, page=page, length=length).pack()),
-        InlineKeyboardButton(text=f"{page + 1}/{length + 1}", callback_data=PLUG),
-        InlineKeyboardButton(text='=>', callback_data=SectionsCallback(
-            action=SectionsCallbackActions.next, page=page, length=length).pack()))
+    buttons = pagination.get_buttons(page=0)
+    print(buttons)
+
 
     return builder.as_markup(resize_keyboard=True)
 
 
-@router.callback_query(SectionsCallback.filter(F.action.in_({SectionsCallbackActions.next,
+@sections_router.callback_query(SectionsCallback.filter(F.action.in_({SectionsCallbackActions.next,
                                                              SectionsCallbackActions.prev})))
 async def sections_pagination(callback: CallbackQuery, callback_data: SectionsCallback, state: FSMContext):
 
     length = callback_data.length
-
     if callback_data.action == SectionsCallbackActions.next and callback_data.page != length:
         await callback.message.edit_text(Strings.sections_info,
                                          reply_markup=get_sections_ikb(get_sections(), page=callback_data.page + 1))

@@ -1,33 +1,13 @@
 import asyncio
 import logging
-
 from aiogram.client.default import DefaultBotProperties
-from aiogram.filters import StateFilter, CommandStart
 from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.types import Message
+from aiogram import Bot, Dispatcher
 
-import domain
-from data.queries import insert_user
-
-
-from aiogram import Bot, Dispatcher, F
-
-from domain.fixme.quiz import cmd_start_quiz, FSMQuiz, cmd_add_answer
-from domain.user_section.callback_data import UserSectionQuizCD, EditUserSectionCD
-from domain.user_section.edit_user_section import edit_user_section, finish_edit_user_section, edit_add_words_info, \
-    cmd_back_to_edit, edit_add_words, show_words_to_delete, delete_words
-from domain.user_section.fsm_states import UserSectionQuizState, UserSectionEdit
-
-from domain.user_section.user_section_quiz import cmd_start_user_section_quiz, cancel_user_section_quiz, \
-    cmd_add_answer_us
-from domain.user_section.user_sections import add_user_section_title, add_user_section_words, \
-    UserSectionState, add_user_section_finish, cancel_add_us, get_user_section_words, UserSectionsCD, \
-    remove_user_section, cmd_back_to_user_sections
-from domain.fixme.words import cmd_words, cmd_words_pag, WordsPag
-from domain.fixme.words_voice import cmd_voice, cmd_delete_voice, cmd_return_to_sections, cmd_return_to_words, VoiceCD
-from domain.filters.filters import QuizCallbackData
+from domain.commands import cmd_router
+from domain.pagination import Pagination
+from domain.sections import sections_router, SectionsCallback, SectionsCallbackActions
 from domain.utils.settings import settings
-from resources.strings import Strings
 
 logging.basicConfig(level=logging.INFO)
 default = DefaultBotProperties(allow_sending_without_reply=True, parse_mode="HTML")
@@ -68,8 +48,7 @@ async def start():
     # dp.message.register(edit_add_words, StateFilter(UserSectionEdit.edit_add_words))
     # dp.callback_query.register(show_words_to_delete, EditUserSectionCD.filter(F.action == "show_delete_word"))
     # dp.callback_query.register(delete_words, EditUserSectionCD.filter(F.action == "delete_word"))
-    dp.include_routers(domain.commands.router, domain.sections.router)
-
+    dp.include_routers(cmd_router, sections_router)
     try:
         await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
     finally:

@@ -10,10 +10,10 @@ from domain.user_section.us_keyboards.keyboards import inline_user_sections_kb
 from resources.strings import Strings
 
 
-router = Router()
+cmd_router = Router()
 
 
-@router.message(CommandStart())
+@cmd_router.message(CommandStart())
 async def cmd_start(message: Message):
     await message.answer(Strings.entry_info)
     try:
@@ -22,7 +22,7 @@ async def cmd_start(message: Message):
         return
 
 
-@router.message(Command('sections'))
+@cmd_router.message(Command('sections'))
 async def cmd_sections(message: Message, state: FSMContext):
     sections = get_sections()
     await message.answer(Strings.sections_info,
@@ -30,12 +30,12 @@ async def cmd_sections(message: Message, state: FSMContext):
     await state.set_state(SectionsState.change_page)
 
 
-@router.message(Command('profile'))
+@cmd_router.message(Command('profile'))
 async def cmd_profile(message: Message, state: FSMContext):
     await state.clear()
     await message.answer("Профиль")
 
 
-@router.message(Command('my_sections'))
+@cmd_router.message(Command('my_sections'))
 async def cmd_user_sections(message: Message):
     await message.answer(Strings.available_user_sections, reply_markup=inline_user_sections_kb(message.from_user.id))
