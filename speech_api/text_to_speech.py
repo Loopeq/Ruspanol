@@ -1,22 +1,47 @@
-# import os
-# from pathlib import Path
-# from gtts import gTTS
-#
-# ROOT_PATH = Path("speech_api/voices")
-#
-# def get_voice(word: str, user_id: int):
-#     word_name = Path(f"{user_id}.mp3")
-#     apath = ROOT_PATH / word_name
-#     language = 'es'
-#     voice_obj = gTTS(text=word, tld="com", lang=language, slow=False)
-#     voice_obj.save(str(apath))
-#     return apath
-#
-# def remove_voice(apath: Path):
-#     os.remove(apath)
-#
-# def main():
-#     pass
-#
-# if __name__ == "__main__":
-#     main()
+import asyncio
+import json
+import urllib.request as ur
+import requests
+
+from domain.settings import settings
+
+URL = "http://api.voicerss.org/"
+
+
+async def get_voice(user_id: int, message: str) -> str:
+    params = {
+        "key": settings.api_key,
+        "src": message,
+        "hl": "es-mx",
+        "c": "MP3",
+        "f": "44khz_16bit_stereo",
+        "v": "Jose"
+    }
+    with requests.Session() as session:
+        response = session.get(URL, params=params)
+        path = f"speech_api/voices/{user_id}.mp3"
+        with open(path, "wb") as f:
+            f.write(response.content)
+        return path
+
+
+async def get_voice_eden(message: str, user_id: int):
+    headers = {
+        "Authorization": f"Bearer {settings.api_key_eden}"}
+
+    url = "https://api.edenai.run/v2/audio/text_to_speech"
+    payload = {
+        "providers": "openai", "language": "es",
+        "option": "MALE",
+        "text": message,
+        "fallback_providers": ""
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+    result = json.loads(response.text)
+    result_url = result["openai"]["audio_resource_url"]
+
+    path = f"speech_api/voices/{user_id}.mp3"
+    ur.urlretrieve(result_url, path)
+    return path
+

@@ -5,7 +5,7 @@ from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from data.queries import insert_user
+from data.queries import insert_user, delete_history
 from domain.free_speech import FreeSpeechStates
 from resources.strings import Strings
 
@@ -20,6 +20,7 @@ class BotCommands(Enum):
 @cmd_router.message(Command(BotCommands.dialogue.value))
 async def cmd_dialogue(message: Message, state: FSMContext):
     await message.answer("Начните беседу.")
+    delete_history(user_id=message.from_user.id)
     await state.set_state(FreeSpeechStates.dialogue)
 
 
@@ -27,7 +28,7 @@ async def cmd_dialogue(message: Message, state: FSMContext):
 async def cmd_start(message: Message):
     await message.answer(Strings.entry_info)
     try:
-        insert_user(str(message.from_user.id))
+        insert_user(message.from_user.id)
     except Exception as error:
         print(error)
         return
