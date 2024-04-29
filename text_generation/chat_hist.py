@@ -6,6 +6,7 @@ from domain.settings import settings
 
 LIMIT = 4
 
+
 class Roles(Enum):
     system = "system"
     user = "user"

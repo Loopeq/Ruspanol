@@ -18,7 +18,7 @@ dp = Dispatcher(storage=storage)
 
 
 async def on_startup():
-    commands = [ BotCommand(command=BotCommands.dialogue.value, description='Свободный разговор с ИИ💬') ]
+    commands = [ BotCommand(command=str(BotCommands.dialogue.value), description='Свободный разговор с ИИ💬')]
     await bot.set_my_commands(commands=commands)
 
 

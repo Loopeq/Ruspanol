@@ -1,6 +1,6 @@
 import sqlite3
 
-connection = sqlite3.connect(r'C:\\Users\\arsen\\PycharmProjects\\espanol\\data\\espanol.db')
+connection = sqlite3.connect("data/espanol.db")
 connection.row_factory = sqlite3.Row
 cursor = connection.cursor()
 
