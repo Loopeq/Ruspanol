@@ -1,20 +1,29 @@
+import asyncio
+
+from g4f import models
 from g4f.client import Client
+
+from text_generation.chat_hist import update_hist, get_hist
 
 client = Client()
 
-MESSAGES = [{"role": "system", "content": "Answer as my pen pal from Spain or Latin America."
-                                          "Answer in Spanish. Don't pretend to be a bot and try to keep the conversation going."}]
-def main(messages: list[dict]) -> None:
+
+
+async def run_provider(message: str, user_id: str) -> str:
+
+    update_hist(message=message, user_id=user_id, is_user=True)
 
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=messages,
-        max_tokens=100,
+        model=models.gpt_35_turbo,
+        messages=get_hist(user_id),
+        max_tokens=100
     )
-    print(response.choices[0].message.content)
+    message = response.choices[0].message.content
+    update_hist(message=message, user_id=user_id, is_user=False)
+    return message
 
 
 
 if __name__ == "__main__":
-    MESSAGES.append({"role": "user", "content": "Hola!. ¿Que tal? ¿De donde eres?"})
-    main(MESSAGES)
+    asyncio.run(run_provider("Hola, como te llamas?"))
+

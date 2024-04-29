@@ -1,3 +1,4 @@
+from aiogram.types import BotCommand
 from environs import Env
 from dataclasses import dataclass
 
@@ -16,6 +17,7 @@ def get_settings(path: str):
         admin_id=env.int("ADMIN_ID"),
         rss_token=env.str("RSS_TOKEN")
     )
+
 
 
 settings = get_settings("adminfo")
