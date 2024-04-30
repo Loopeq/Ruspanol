@@ -18,8 +18,7 @@ INITIAL = {"role": Roles.system.value, "content": "Speak Spanish. Imagine that y
                                                   "robot or assistant. Try continuing the dialogue. Speak as they say "
                                                   "in the chat."
                                                   "Don’t ask more than two questions on the same subject, show "
-                                                  "initiative in questions."
-                                         }
+                                                  "initiative in questions."}
 
 
 def get_role_message(role: Roles, message: str) -> dict:

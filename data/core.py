@@ -21,4 +21,10 @@ is_user INT NOT NULL,
 FOREIGN KEY (user_id) REFERENCES users(id))
 """)
 
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS Phrases
+id INTEGER PRIMARY KEY,
+
+""")
+
 connection.commit()

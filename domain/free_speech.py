@@ -1,15 +1,15 @@
-from aiogram import Router, Bot
+from aiogram import Router, Bot, F
 from aiogram.filters import StateFilter
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, FSInputFile
 
 from resources.strings import Strings
-from speech_api.text_to_speech import get_voice, get_voice_eden
+from speech_api.text_to_speech import get_voice_eden
 from text_generation.dialogue_model import run_provider
 
 M_LIMIT = 25
 
-fs_router = Router()
+router = Router()
 
 
 class FreeSpeechStates(StatesGroup):
@@ -20,7 +20,7 @@ def is_correct_length(message: str):
     return len(message.split()) <= M_LIMIT
 
 
-@fs_router.message(StateFilter(FreeSpeechStates))
+@router.message(StateFilter(FreeSpeechStates),  F.content_type.in_({'text', 'voice'}))
 async def dialogue_process(message: Message, bot: Bot):
     if not is_correct_length(message.text):
         await message.answer(text=f"{Strings.message_length_info(limit=M_LIMIT)}")

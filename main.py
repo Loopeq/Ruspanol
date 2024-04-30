@@ -5,10 +5,12 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram import Bot, Dispatcher
 from aiogram.types import BotCommand
 
-from domain.commands import cmd_router, BotCommands
-from domain.free_speech import fs_router
+from domain.commands import router as cmd_router, BotCommands
+from domain.free_speech import router as fs_router
+from domain.translation_and_speak import router as tas_router
 from domain.settings import settings
 
+from resources.strings import Strings
 
 logging.basicConfig(level=logging.INFO)
 default = DefaultBotProperties(allow_sending_without_reply=True, parse_mode="HTML")
@@ -18,14 +20,15 @@ dp = Dispatcher(storage=storage)
 
 
 async def on_startup():
-    commands = [ BotCommand(command=str(BotCommands.dialogue.value), description='Свободный разговор с ИИ💬')]
+    commands = [BotCommand(command=str(BotCommands.dialogue.value), description=Strings.cmd_dialogue_info),
+                BotCommand(command=str(BotCommands.translate_and_speak.value), description=Strings.cmd_stt_info)]
     await bot.set_my_commands(commands=commands)
 
 
 async def start():
     await bot.delete_webhook(drop_pending_updates=True)
     dp.startup.register(on_startup)
-    dp.include_routers(cmd_router, fs_router)
+    dp.include_routers(cmd_router, fs_router, tas_router)
     try:
         await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
     finally:

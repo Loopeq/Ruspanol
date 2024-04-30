@@ -1,10 +1,11 @@
 import json
 import requests
+from aiogram.types import File
 
 from domain.settings import settings
 
 
-def get_text_from_voice():
+async def get_text_from_voice(voice_path: str):
 
     headers = {
         "Authorization": f"Bearer {settings.api_key_eden}"}
@@ -14,10 +15,10 @@ def get_text_from_voice():
         "language": "es-MX",
     }
 
-    files = {'file': open("voices/952485476.mp3", 'rb')}
+    files = {'file': open(voice_path, 'rb')}
 
     response = requests.post(url, data=data, files=files, headers=headers)
     result = json.loads(response.text)
-    print(result["results"]["openai"]["text"])
+    return result["results"]["openai"]["text"]
 
 

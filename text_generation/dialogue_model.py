@@ -3,6 +3,7 @@ import asyncio
 from g4f import models
 from g4f.client import Client
 
+from domain.settings import settings
 from text_generation.chat_hist import update_hist, get_hist
 
 client = Client()
@@ -23,5 +24,6 @@ async def run_provider(message: str, user_id: int) -> str:
 
 
 if __name__ == "__main__":
-    asyncio.run(run_provider("Hola, como te llamas?"))
+    asyncio.run(run_provider("Hola, como te llamas?", user_id=settings.admin_id))
+
 
