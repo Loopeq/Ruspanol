@@ -5,10 +5,11 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram import Bot, Dispatcher
 from aiogram.types import BotCommand
 
-from data.queries.user import create_table, select_users
+from data.queries.user import create_table
 from domain.commands import router as cmd_router, BotCommands
 from domain.admin.commands import router as admin_router
-from domain.free_speech import router as fs_router
+from domain.assistant import router as fs_router
+from domain.shemas.schemas_dto import UserHistAddDto
 from domain.translation_and_speak import router as tas_router
 from domain.settings import settings
 
@@ -24,7 +25,7 @@ dp = Dispatcher(storage=storage)
 
 async def on_startup():
     await create_table()
-    commands = [BotCommand(command=str(BotCommands.dialogue.value), description=Strings.cmd_dialogue_info),
+    commands = [BotCommand(command=str(BotCommands.assistance.value), description=Strings.cmd_assistance_info),
                 BotCommand(command=str(BotCommands.translate_and_speak.value), description=Strings.cmd_stt_info)]
     await bot.set_my_commands(commands=commands)
 

@@ -21,11 +21,11 @@ class Role(enum.Enum):
     system = "system"
 
 
-class UserHistGPTModel(Base):
+class UserHistModel(Base):
     __tablename__ = "user_hist_gpt"
 
     id: Mapped[intpk]
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"))
+    tg_id: Mapped[int] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"))
     message: Mapped[str] = mapped_column(String(128))
     role: Mapped[Role]
 

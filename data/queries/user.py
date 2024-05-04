@@ -4,7 +4,7 @@ from sqlalchemy import select
 
 from data.models.user_model import UserModel
 from data.database import engine, session_factory, Base
-from domain.shemas.user_model_dto import UserAddDto, UserDto
+from domain.shemas.schemas_dto import UserAddDto, UserDto
 
 
 async def create_table():

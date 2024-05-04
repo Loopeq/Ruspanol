@@ -1,44 +1,20 @@
 from enum import Enum
+from typing import List
 
-from domain.settings import settings
-
+from data.models.user_model import Role
+from domain.shemas.schemas_dto import UserHistDto
 
 LIMIT = 4
 
-
-class Roles(Enum):
-    system = "system"
-    user = "user"
-    assistant = "assistant"
-
-
-INITIAL = {"role": Roles.system.value, "content": "Speak Spanish. Imagine that you communicate with me on the forum. "
-                                                  "You are a guy from Latin America or Spain. Do not pose as a chat, "
-                                                  "robot or assistant. Try continuing the dialogue. Speak as they say "
-                                                  "in the chat."
-                                                  "Don’t ask more than two questions on the same subject, show "
-                                                  "initiative in questions."}
+INITIAL = {"role": Role.system.value, "content": "Answer in Russian, but if you need to give an example or explain "
+                                                 "something, you can switch to Spanish. Imagine that you are a Spanish "
+                                                 "teacher. Answer the questions like a Spanish teacher. Try to answer "
+                                                 "in a simple and understandable language for the student."}
 
 
-def get_role_message(role: Roles, message: str) -> dict:
-    return {"role": role.value, "content": message}
-
-
-def update_hist(message: str, user_id: int, is_user: bool = True):
-    #insert_history(user_id, message, is_user)
-    pass
-
-
-def get_hist(user_id: int):
-    #hist, count = get_history(user_id=user_id)
-    #messages = hist[-LIMIT:] if count >= LIMIT else hist
-
-    messages = ["123"]
-
-    messages_wrap = [{"role": Roles.user.value if message["is_user"] else Roles.assistant.value, "content": message["message"]} for message in messages]
-    messages_wrap.insert(0, INITIAL)
-    return messages_wrap
-
-
-
+def get_history_wrapped(history: List[UserHistDto]) -> List[dict]:
+    history = history[::-1]
+    history_wrapped = [{"role": hist.role.value, "content": hist.message} for hist in history]
+    history_wrapped.insert(0, INITIAL)
+    return history_wrapped
 
