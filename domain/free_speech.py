@@ -34,3 +34,4 @@ async def dialogue_process(message: Message, bot: Bot):
     await bot.send_voice(chat_id=message.from_user.id, voice=voice_input)
 
 
+

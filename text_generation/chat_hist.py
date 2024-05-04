@@ -1,6 +1,5 @@
 from enum import Enum
 
-from data.queries import get_history, insert_history
 from domain.settings import settings
 
 
@@ -26,12 +25,16 @@ def get_role_message(role: Roles, message: str) -> dict:
 
 
 def update_hist(message: str, user_id: int, is_user: bool = True):
-    insert_history(user_id, message, is_user)
+    #insert_history(user_id, message, is_user)
+    pass
 
 
 def get_hist(user_id: int):
-    hist, count = get_history(user_id=user_id)
-    messages = hist[-LIMIT:] if count >= LIMIT else hist
+    #hist, count = get_history(user_id=user_id)
+    #messages = hist[-LIMIT:] if count >= LIMIT else hist
+
+    messages = ["123"]
+
     messages_wrap = [{"role": Roles.user.value if message["is_user"] else Roles.assistant.value, "content": message["message"]} for message in messages]
     messages_wrap.insert(0, INITIAL)
     return messages_wrap

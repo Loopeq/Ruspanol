@@ -12,6 +12,8 @@ aiogram = "^3.5.0"
 g4f = "^0.3.0.7"
 nest-asyncio = "^1.6.0"
 requests = "^2.31.0"
+alembic = "^1.13.1"
+aiosqlite = "^0.20.0"
 
 
 [build-system]
