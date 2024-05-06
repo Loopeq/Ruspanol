@@ -4,7 +4,7 @@ from sqlalchemy import ForeignKey, String
 
 from data.custom_types import intpk, created_at
 from data.database import Base
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 
 class UserModel(Base):

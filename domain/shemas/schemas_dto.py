@@ -22,3 +22,12 @@ class UserHistAddDto(BaseModel):
 
 class UserHistDto(UserHistAddDto):
     id: int
+
+
+class PhrasesAddDto(BaseModel):
+    ru: str
+    es: str
+
+
+class PhrasesDto(PhrasesAddDto):
+    id: int

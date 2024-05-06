@@ -6,10 +6,11 @@ from domain.shemas.schemas_dto import UserHistDto
 
 LIMIT = 4
 
-INITIAL = {"role": Role.system.value, "content": "Answer in Russian, but if you need to give an example or explain "
-                                                 "something, you can switch to Spanish. Imagine that you are a Spanish "
-                                                 "teacher. Answer the questions like a Spanish teacher. Try to answer "
-                                                 "in a simple and understandable language for the student."}
+INITIAL = {"role": Role.system.value, "content": "Answer in Russian"
+                                                 "Imagine that you are a Spanish teacher for russian student. "
+                                                 "Answer the questions like a Spanish teacher. Try to answer "
+                                                 "in a simple and understandable language for the student."
+                                                 "Try to add a little theoretical background to the answers."}
 
 
 def get_history_wrapped(history: List[UserHistDto]) -> List[dict]:

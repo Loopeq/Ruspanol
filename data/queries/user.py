@@ -29,3 +29,4 @@ async def select_users() -> List[UserDto]:
         users = result.scalars().all()
         users_dto = [UserDto.model_validate(row, from_attributes=True) for row in users]
         return users_dto
+

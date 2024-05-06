@@ -9,12 +9,12 @@ from speech_api.speech_to_text import get_text_from_voice
 router = Router()
 
 
-class TranslationAndSpeakStates(StatesGroup):
-    tas = State()
+class PhrasesState(StatesGroup):
+    process = State()
 
 
-@router.message(StateFilter(TranslationAndSpeakStates), F.content_type.in_({'text', 'voice'}))
-async def translation_and_speak_process(message: Message, bot: Bot):
+@router.message(StateFilter(PhrasesState), F.content_type.in_({'text', 'voice'}))
+async def phrases_process(message: Message, bot: Bot):
     content_type = message.content_type
 
     if content_type == "voice":

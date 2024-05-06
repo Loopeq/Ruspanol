@@ -26,11 +26,11 @@ class Pagination:
     def get_buttons(self, page: int):
         if not self.data:
             raise ValueError("Data is empty. Try set_data() function first.")
-        buttons = [ InlineKeyboardButton(text='<=', callback_data=self.callback_data(
+        buttons = [InlineKeyboardButton(text='<=', callback_data=self.callback_data(
             action=PaginationActions.prev, page=page, length=self.length).pack()),
-        InlineKeyboardButton(text=f"{page + 1}/{self.length + 1}", callback_data=""),
-        InlineKeyboardButton(text='=>', callback_data=self.callback_data(
-            action=PaginationActions.next, page=page, length=self.length).pack())]
+                   InlineKeyboardButton(text=f"{page + 1}/{self.length + 1}", callback_data=""),
+                   InlineKeyboardButton(text='=>', callback_data=self.callback_data(
+                       action=PaginationActions.next, page=page, length=self.length).pack())]
 
         return buttons
 
@@ -39,4 +39,3 @@ class Pagination:
             raise TypeError("Data mustn't be None or empty")
         self.data = data
         self.length = len(self.data)
-

@@ -8,13 +8,11 @@ from aiogram.types import BotCommand
 from data.queries.user import create_table
 from domain.commands import router as cmd_router, BotCommands
 from domain.admin.commands import router as admin_router
-from domain.assistant import router as fs_router
-from domain.shemas.schemas_dto import UserHistAddDto
-from domain.translation_and_speak import router as tas_router
+from domain.assistant import router as support_router
+from domain.phrases import router as phrases_router
 from domain.settings import settings
-
-
 from resources.strings import Strings
+
 
 logging.basicConfig(level=logging.INFO)
 default = DefaultBotProperties(allow_sending_without_reply=True, parse_mode="HTML")
@@ -26,14 +24,14 @@ dp = Dispatcher(storage=storage)
 async def on_startup():
     await create_table()
     commands = [BotCommand(command=str(BotCommands.assistance.value), description=Strings.cmd_assistance_info),
-                BotCommand(command=str(BotCommands.translate_and_speak.value), description=Strings.cmd_stt_info)]
+                BotCommand(command=str(BotCommands.phrases.value), description=Strings.cmd_phrases_info)]
     await bot.set_my_commands(commands=commands)
 
 
 async def start():
     await bot.delete_webhook(drop_pending_updates=True)
     dp.startup.register(on_startup)
-    dp.include_routers(cmd_router, fs_router, tas_router)
+    dp.include_routers(cmd_router, support_router, phrases_router)
     dp.include_router(admin_router)
     try:
         await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
