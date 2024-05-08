@@ -4,6 +4,7 @@ from sqlalchemy.orm import DeclarativeBase
 
 engine = create_async_engine("sqlite+aiosqlite:///data/ruspanol.db")
 
+
 session_factory = async_sessionmaker(engine)
 
 

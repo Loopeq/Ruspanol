@@ -15,6 +15,7 @@ async def insert_history(user_history: UserHistAddDto) -> None:
 
 
 async def select_history(tg_id: int, limit: int) -> List[UserHistDto]:
+    tg_id = str(tg_id)
     async with session_factory() as session:
         query = select(UserHistModel).filter(UserHistModel.tg_id == tg_id)\
             .order_by(UserHistModel.id.desc()).limit(limit)
@@ -25,6 +26,7 @@ async def select_history(tg_id: int, limit: int) -> List[UserHistDto]:
 
 
 async def delete_history(tg_id: int) -> None:
+    tg_id = str(tg_id)
     async with session_factory() as session:
         query = delete(UserHistModel).filter(UserHistModel.tg_id == tg_id)
         await session.execute(query)

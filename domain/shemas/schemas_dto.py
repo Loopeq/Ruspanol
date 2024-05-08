@@ -15,7 +15,7 @@ class UserDto(UserAddDto):
 
 
 class UserHistAddDto(BaseModel):
-    tg_id: int
+    tg_id: str
     message: str
     role: Role
 
@@ -30,4 +30,13 @@ class PhrasesAddDto(BaseModel):
 
 
 class PhrasesDto(PhrasesAddDto):
+    id: int
+
+
+class UserPhrasesProgressAddDto(BaseModel):
+    tg_id: str
+    phrase_id: int
+
+
+class UserPhrasesProgressDto(UserPhrasesProgressAddDto):
     id: int

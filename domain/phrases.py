@@ -1,36 +1,50 @@
 from aiogram import Router, F, Bot
-from aiogram.enums import ContentType
 from aiogram.filters import StateFilter
+from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 
+from data.queries.phrases import select_current_phrase, update_current_phrase, select_phrase_by_id
+from domain.keyboards.phrases_ikb import PhrasesCallbackData, PhrasesActions, phrases_ikb
+from domain.settings import settings
+from domain.shemas.schemas_dto import UserPhrasesProgressAddDto
+from resources.strings import Strings
 from speech_api.speech_to_text import get_text_from_voice
 
 router = Router()
 
 
 class PhrasesState(StatesGroup):
-    process = State()
+    phrase_process = State()
+
+async def _phrase_error_message_adm(bot: Bot, user_id: int):
+    await bot.send_message(chat_id=settings.admin_id, text=f"Phrases is done for user: {user_id}")
 
 
-@router.message(StateFilter(PhrasesState), F.content_type.in_({'text', 'voice'}))
-async def phrases_process(message: Message, bot: Bot):
-    content_type = message.content_type
+@router.callback_query(StateFilter(PhrasesState.phrase_process),
+                       PhrasesCallbackData.filter(F.action.in_({PhrasesActions.add,
+                                                                PhrasesActions.next,
+                                                                PhrasesActions.voice})))
+async def phrases_process(callback: CallbackQuery, callback_data: PhrasesCallbackData, state: FSMContext, bot: Bot):
 
-    if content_type == "voice":
-        audio_file_id = message.voice.file_id
-        audio_file = await bot.get_file(file_id=audio_file_id)
-        audio_file_path = audio_file.file_path
-        current_path = f"speech_api/voices/tas{message.from_user.id}.mp3"
-        await bot.download_file(file_path=audio_file_path,
-                                destination=current_path)
-        text = await get_text_from_voice(voice_path=current_path)
+    data = await state.get_data()
+    current_phrase_id = data["current_phrase_id"]
+    current_phrase = await select_phrase_by_id(phrase_id=current_phrase_id + 1)
 
-        await message.answer(text)
-    elif content_type == "text":
-        pass
+    if current_phrase is None:
+        await _phrase_error_message_adm(bot=bot, user_id=callback.from_user.id)
+        await callback.message.edit_text(text=Strings.phrase_error_message)
+        return
 
+    if callback_data.action == PhrasesActions.voice:
+        return
 
+    if callback_data.action == PhrasesActions.add:
+         pass
 
+    await callback.message.edit_text(f"{current_phrase.es} - {current_phrase.ru}", reply_markup=phrases_ikb())
+    await state.update_data(current_phrase_id=current_phrase_id + 1)
+    await update_current_phrase(UserPhrasesProgressAddDto(tg_id=str(callback.from_user.id),
+                                                          phrase_id=current_phrase_id + 1))
 
-
+    await callback.answer()

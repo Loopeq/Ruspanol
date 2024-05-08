@@ -25,7 +25,6 @@ class UserHistModel(Base):
     __tablename__ = "user_hist_gpt"
 
     id: Mapped[intpk]
-    tg_id: Mapped[int] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"))
+    tg_id: Mapped[str] = mapped_column(ForeignKey("user.tg_id", ondelete="CASCADE"))
     message: Mapped[str] = mapped_column(String(128))
     role: Mapped[Role]
-

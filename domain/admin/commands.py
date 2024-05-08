@@ -7,7 +7,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
 from magic_filter import F
 
-from data.queries.phrases import insert_phrase
+from data.queries.phrases import insert_phrase, select_current_phrase
 from domain.admin.callback_models import AdminMenuCallbackData, BasicAdminActions, CheckActions
 from domain.admin.keyboards import admin_menu_ikb, admin_check_ikb
 from domain.filters import IsAdminFilter
