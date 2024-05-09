@@ -2,14 +2,14 @@ from aiogram import Router, F, Bot
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
-from aiogram.types import Message, CallbackQuery, FSInputFile
+from aiogram.types import CallbackQuery, FSInputFile
 
-from data.queries.phrases import select_current_phrase, update_current_phrase, select_phrase_by_id
+from data.queries.dictionary import insert_phrase_into_dictionary
+from data.queries.phrases import select_phrase_by_id
 from domain.keyboards.phrases_ikb import PhrasesCallbackData, PhrasesActions, phrases_ikb, remove_voice_ikb
 from domain.settings import settings
-from domain.shemas.schemas_dto import UserPhrasesProgressAddDto
+from domain.shemas.schemas_dto import DictionaryAddDto
 from resources.strings import Strings
-from speech_api.speech_to_text import get_text_from_voice
 from speech_api.text_to_speech import get_audio_rss
 
 router = Router()
@@ -60,7 +60,16 @@ async def phrases_process(callback: CallbackQuery, callback_data: PhrasesCallbac
         return
 
     if callback_data.action == PhrasesActions.add:
-        pass
+        current_phrase = await select_phrase_by_id(phrase_id=current_phrase_id)
+
+        if await _phrase_is_none(current_phrase, bot=bot, user_id=callback.from_user.id):
+            await callback.message.edit_text(text=Strings.phrase_error_message)
+            await callback.answer()
+            return
+        await insert_phrase_into_dictionary(phrase=DictionaryAddDto(tg_id=str(callback.from_user.id),
+                                                                    phrase_id=current_phrase.id))
+
+        await callback.answer(text="Фраза добавлена в словарь✅", show_alert=False)
         return
 
 

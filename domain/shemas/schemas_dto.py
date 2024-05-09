@@ -40,3 +40,13 @@ class UserPhrasesProgressAddDto(BaseModel):
 
 class UserPhrasesProgressDto(UserPhrasesProgressAddDto):
     id: int
+
+
+class DictionaryAddDto(BaseModel):
+    tg_id: str
+    phrase_id: int
+
+
+class DictionaryDto(DictionaryAddDto):
+    id: int
+    score: int

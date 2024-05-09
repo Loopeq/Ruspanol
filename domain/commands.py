@@ -5,13 +5,15 @@ from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from data.queries.phrases import get_phrases, select_current_phrase, update_current_phrase
+from data.queries.dictionary import select_user_dictionary
+from data.queries.phrases import select_current_phrase
 from data.queries.user import insert_user
 from data.queries.user_history import delete_history
 from domain.assistant import AssistantStates
+from domain.keyboards.dictionary_ikb import dictionary_ikb
 from domain.keyboards.phrases_ikb import phrases_ikb
 from domain.phrases import PhrasesState
-from domain.shemas.schemas_dto import UserAddDto, UserPhrasesProgressAddDto
+from domain.shemas.schemas_dto import UserAddDto
 from resources.strings import Strings
 
 
@@ -21,6 +23,14 @@ router = Router()
 class BotCommands(Enum):
     assistance = "assistance"
     phrases = "phrases"
+    dictionary = "vocab"
+
+
+@router.message(CommandStart())
+async def cmd_start(message: Message, state: FSMContext):
+    await state.clear()
+    await message.answer(Strings.welcome_cmd_start)
+    await insert_user(user=UserAddDto(tg_id=message.from_user.id))
 
 
 @router.message(Command(BotCommands.assistance.value))
@@ -36,11 +46,7 @@ async def cmd_phrases(message: Message, state: FSMContext):
     await state.clear()
     await message.answer(Strings.welcome_cmd_phrases)
 
-    current_phrase = await select_current_phrase(tg_id=message.from_user.id)
-
-    if current_phrase is None:
-        await message.answer(Strings.phrase_error_message)
-        return
+    current_phrase = await select_current_phrase(tg_id=str(message.from_user.id))
 
     await message.answer(f"{current_phrase.es} - {current_phrase.ru}", reply_markup=phrases_ikb())
 
@@ -48,11 +54,15 @@ async def cmd_phrases(message: Message, state: FSMContext):
     await state.update_data(current_phrase_id=current_phrase.id)
 
 
-@router.message(CommandStart())
-async def cmd_start(message: Message, state: FSMContext):
+@router.message(Command(BotCommands.dictionary.value))
+async def cmd_dictionary(message: Message, state: FSMContext):
     await state.clear()
-    await message.answer(Strings.welcome_cmd_start)
-    await insert_user(user=UserAddDto(tg_id=message.from_user.id))
+    phrases_from_dict = await select_user_dictionary(tg_id=str(message.from_user.id))
 
+    if not phrases_from_dict:
+        await message.answer(text=Strings.dictionary_error_message)
+        return
 
+    phrases_input = "\n".join([f"{phrase.es} - {phrase.ru}" for phrase in phrases_from_dict])
+    await message.answer(phrases_input, reply_markup=dictionary_ikb())
 

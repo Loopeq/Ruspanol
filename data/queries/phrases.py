@@ -25,7 +25,7 @@ async def insert_phrase(phrase: PhrasesAddDto) -> None:
         await session.commit()
 
 
-async def select_current_phrase(tg_id: int) -> PhrasesDto:
+async def select_current_phrase(tg_id: str) -> PhrasesDto | None:
     async with session_factory() as session:
         pm = aliased(PhrasesModel)
         up = aliased(UserPhrasesProgressModel)
@@ -39,7 +39,7 @@ async def select_current_phrase(tg_id: int) -> PhrasesDto:
             return None
 
 
-async def select_phrase_by_id(phrase_id) -> PhrasesDto:
+async def select_phrase_by_id(phrase_id: str) -> PhrasesDto:
     async with session_factory() as session:
         query = select(PhrasesModel).where(PhrasesModel.id == phrase_id)
         phrase = await session.execute(query)
