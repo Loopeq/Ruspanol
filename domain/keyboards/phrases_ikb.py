@@ -13,6 +13,7 @@ class PhrasesActions(StrEnum):
     add = "add"
     next = "next"
     voice = "voice"
+    remove_voice = "remove_voice"
 
 
 def phrases_ikb():
@@ -28,4 +29,11 @@ def phrases_ikb():
     )
 
     builder.adjust(2, 1)
+    return builder.as_markup()
+
+
+def remove_voice_ikb():
+    builder = InlineKeyboardBuilder()
+    builder.row(InlineKeyboardButton(text="Скрыть❌",
+                                     callback_data=PhrasesCallbackData(action=PhrasesActions.remove_voice).pack()))
     return builder.as_markup()
