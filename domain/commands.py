@@ -3,13 +3,14 @@ from enum import Enum
 from aiogram import Router
 from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 
 from data.queries.dictionary import select_user_dictionary
 from data.queries.phrases import select_current_phrase
 from data.queries.user import insert_user
 from data.queries.user_history import delete_history
 from domain.assistant import AssistantStates
+from domain.keyboards.constants import PLUG
 from domain.keyboards.dictionary_ikb import dictionary_ikb
 from domain.keyboards.phrases_ikb import phrases_ikb
 from domain.phrases import PhrasesState
@@ -24,6 +25,12 @@ class BotCommands(Enum):
     assistance = "assistance"
     phrases = "phrases"
     dictionary = "vocab"
+
+
+@router.callback_query(lambda callback: callback.data == PLUG)
+async def catch_plug(callback: CallbackQuery):
+    await callback.answer()
+    return
 
 
 @router.message(CommandStart())
