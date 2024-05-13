@@ -25,6 +25,7 @@ dp = Dispatcher(storage=storage)
 
 async def on_startup():
     await create_table()
+
     commands = [BotCommand(command=str(BotCommands.assistance.value), description=Strings.cmd_assistance_info),
                 BotCommand(command=str(BotCommands.phrases.value), description=Strings.cmd_phrases_info),
                 BotCommand(command=str(BotCommands.dictionary.value), description=Strings.cmd_dictionary_info)]

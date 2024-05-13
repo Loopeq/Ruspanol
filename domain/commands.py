@@ -5,7 +5,7 @@ from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
-from data.queries.dictionary import select_user_dictionary
+from data.queries.dictionary import select_count_of_phrases, select_score_percent
 from data.queries.phrases import select_current_phrase
 from data.queries.user import insert_user
 from data.queries.user_history import delete_history
@@ -63,13 +63,16 @@ async def cmd_phrases(message: Message, state: FSMContext):
 
 @router.message(Command(BotCommands.dictionary.value))
 async def cmd_dictionary(message: Message, state: FSMContext):
-    await state.clear()
-    phrases_from_dict = await select_user_dictionary(tg_id=str(message.from_user.id))
 
-    if not phrases_from_dict:
+    await state.clear()
+    count_of_phrases = await select_count_of_phrases(tg_id=str(message.from_user.id))
+
+    if not count_of_phrases:
         await message.answer(text=Strings.dictionary_error_message)
         return
 
-    phrases_input = "\n".join([f"{phrase.es} - {phrase.ru}" for phrase in phrases_from_dict])
-    await message.answer(phrases_input, reply_markup=dictionary_ikb())
+    phrase_count = await select_count_of_phrases(tg_id=str(message.from_user.id))
+    percent = await select_score_percent(tg_id=str(message.from_user.id))
+    await message.answer(text=Strings.welcome_dictionary_phrase(count=phrase_count, percent=percent),
+                         reply_markup=dictionary_ikb())
 

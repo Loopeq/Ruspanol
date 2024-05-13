@@ -13,12 +13,31 @@ class DictionaryActions(StrEnum):
     test = "test"
 
 
+class TestFilterActions(StrEnum):
+    unexplored = "unexplored"
+    newest = "newest"
+    random = "random"
+
+
 def dictionary_ikb():
 
     builder = InlineKeyboardBuilder()
     builder.row(InlineKeyboardButton(text="Начать тест🧾",
                                      callback_data=DictionaryCallbackData(action=DictionaryActions.test).pack()))
     return builder.as_markup()
+
+
+def dictionary_test_filter_ikb():
+
+    builder = InlineKeyboardBuilder()
+    builder.row(InlineKeyboardButton(text="Самые малоизученные☁️",
+                                     callback_data=DictionaryCallbackData(action=TestFilterActions.unexplored).pack()))
+    builder.row(InlineKeyboardButton(text="Недавно добавленные🕞",
+                                     callback_data=DictionaryCallbackData(action=TestFilterActions.newest).pack()))
+    builder.row(InlineKeyboardButton(text="Случайные🎲",
+                                     callback_data=DictionaryCallbackData(action=TestFilterActions.random).pack()))
+
+    return builder.as_markup(resize_keyboard=True)
 
 
 def test_ikb(total_count: int, correct_count: int = 0, incorrect_count: int = 0):
