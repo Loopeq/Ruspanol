@@ -11,6 +11,7 @@ class DictionaryCallbackData(CallbackData, prefix="dictionary"):
 
 class DictionaryActions(StrEnum):
     test = "test"
+    phrases = "phrases"
 
 
 class TestFilterActions(StrEnum):
@@ -23,7 +24,9 @@ def dictionary_ikb():
 
     builder = InlineKeyboardBuilder()
     builder.row(InlineKeyboardButton(text="Начать тест🧾",
-                                     callback_data=DictionaryCallbackData(action=DictionaryActions.test).pack()))
+                                     callback_data=DictionaryCallbackData(action=DictionaryActions.test).pack()),
+                InlineKeyboardButton(text="Посмотреть свои фразы✍️",
+                                     callback_data=DictionaryCallbackData(action=DictionaryActions.phrases).pack()))
     return builder.as_markup()
 
 

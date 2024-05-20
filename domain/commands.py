@@ -1,6 +1,6 @@
 from enum import Enum
 
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
@@ -8,10 +8,7 @@ from aiogram.types import Message, CallbackQuery
 from data.queries.dictionary import select_count_of_phrases, select_score_percent
 from data.queries.phrases import select_current_phrase
 from data.queries.user import insert_user
-from data.queries.user_history import delete_history
-from domain.assistant import AssistantStates
-from domain.keyboards.constants import PLUG
-from domain.keyboards.dictionary_ikb import dictionary_ikb
+from domain.dictionary.dictionary_ikb import dictionary_ikb
 from domain.keyboards.phrases_ikb import phrases_ikb
 from domain.phrases import PhrasesState
 from domain.shemas.schemas_dto import UserAddDto
@@ -22,15 +19,8 @@ router = Router()
 
 
 class BotCommands(Enum):
-    assistance = "assistance"
     phrases = "phrases"
     dictionary = "vocab"
-
-
-@router.callback_query(lambda callback: callback.data == PLUG)
-async def catch_plug(callback: CallbackQuery):
-    await callback.answer()
-    return
 
 
 @router.message(CommandStart())
@@ -38,14 +28,6 @@ async def cmd_start(message: Message, state: FSMContext):
     await state.clear()
     await message.answer(Strings.welcome_cmd_start)
     await insert_user(user=UserAddDto(tg_id=message.from_user.id))
-
-
-@router.message(Command(BotCommands.assistance.value))
-async def cmd_dialogue(message: Message, state: FSMContext):
-    await state.clear()
-    await delete_history(tg_id=message.from_user.id)
-    await message.answer(Strings.welcome_cmd_assistance)
-    await state.set_state(AssistantStates.support_process)
 
 
 @router.message(Command(BotCommands.phrases.value))

@@ -1,6 +1,6 @@
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
-
+from data.custom_types import created_at
 from data.custom_types import intpk
 from data.database import Base
 
