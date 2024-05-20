@@ -1,17 +1,17 @@
 from typing import List
 
-from sqlalchemy import select, update, and_, func, desc, asc
-from sqlalchemy.exc import NoResultFound
+from sqlalchemy import select, update, and_, func, asc
 from sqlalchemy.orm import aliased
 
 from data.database import session_factory
 from data.models.dictionary_model import DictionaryModel
 from data.models.phrase_model import PhrasesModel
-from domain.keyboards.dictionary_ikb import TestFilterActions
+from domain.dictionary.dictionary_ikb import TestFilterActions
 from domain.shemas.schemas_dto import DictionaryAddDto, PhrasesDto
 
 
-async def select_user_dictionary(tg_id: str, o_filter: TestFilterActions, limit: int = 10) -> List[PhrasesDto] | None:
+async def select_user_dictionary(tg_id: str, o_filter: TestFilterActions = None, limit: int = 10) \
+        -> List[PhrasesDto] | None:
     async with session_factory() as session:
         dm = aliased(DictionaryModel)
         pm = aliased(PhrasesModel)

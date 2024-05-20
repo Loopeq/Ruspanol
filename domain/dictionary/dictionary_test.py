@@ -4,8 +4,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
 from data.queries.dictionary import update_score, select_user_dictionary
-from domain.dictionary.common import TestData, _check_word_equal, _get_current_phrase
-from domain.keyboards.dictionary_ikb import test_ikb, DictionaryCallbackData, TestFilterActions
+from domain.dictionary.common import TestData, check_word_equal, get_current_phrase
+from domain.dictionary.dictionary_ikb import test_ikb, DictionaryCallbackData, TestFilterActions
 from resources.strings import Strings
 from domain.dictionary.user_dictionary import DictionaryState
 
@@ -16,15 +16,6 @@ router = Router()
     DictionaryCallbackData.filter(F.action.in_({TestFilterActions.newest, TestFilterActions.unexplored,
                                                 TestFilterActions.random})))
 async def start_test(callback: CallbackQuery, state: FSMContext, callback_data: DictionaryCallbackData, bot: Bot):
-    # data = await state.get_data()
-    # tmp_data: TestData = data.get("test_data")
-    #
-    # if tmp_data:
-    #     message_id: Message = tmp_data.message_id
-    #     if message_id:
-    #         await bot.delete_message(message_id=message_id, chat_id=callback.from_user.id)
-    #
-    # await state.clear()
     match callback_data.action:
         case TestFilterActions.newest:
             user_dict = await select_user_dictionary(tg_id=str(callback.from_user.id),
@@ -38,8 +29,10 @@ async def start_test(callback: CallbackQuery, state: FSMContext, callback_data: 
         case _:
             user_dict = []
 
+    user_dict = user_dict[::-1]
+
     total_count = len(user_dict)
-    current_phrase = _get_current_phrase(phrases=user_dict)
+    current_phrase = get_current_phrase(phrases=user_dict)
 
     test_data = TestData(user_dict=user_dict,
                          total_count=total_count,
@@ -63,9 +56,9 @@ async def test_process(message: Message, state: FSMContext):
     data = await state.get_data()
     test_data: TestData = data["test_data"]
 
-    is_correct = _check_word_equal(user_answer=message.text, correct_answer=test_data.prev_phrase.es)
+    is_correct = check_word_equal(user_answer=message.text, correct_answer=test_data.prev_phrase.es)
 
-    current_phrase = _get_current_phrase(phrases=test_data.user_dict)
+    current_phrase = get_current_phrase(phrases=test_data.user_dict)
 
     if is_correct:
         test_data.correct_count += 1

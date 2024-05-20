@@ -14,13 +14,13 @@ class TestData:
     message_id: Optional[int] = None
 
 
-def _get_current_phrase(phrases: list[PhrasesDto]) -> PhrasesDto | None:
+def get_current_phrase(phrases: list[PhrasesDto]) -> PhrasesDto | None:
     if not phrases:
         return None
     return phrases.pop()
 
 
-def _check_word_equal(user_answer: str, correct_answer: str) -> bool:
+def check_word_equal(user_answer: str, correct_answer: str) -> bool:
     symbols = {
         "á": "a",
         "é": "e",
@@ -36,3 +36,4 @@ def _check_word_equal(user_answer: str, correct_answer: str) -> bool:
         user_answer = user_answer.replace(symbol, symbols[symbol])
         correct_answer = correct_answer.replace(symbol, symbols[symbol])
     return user_answer == correct_answer
+
